@@ -102,8 +102,9 @@ Write all values $M(1), M(2), \ldots, M(10000)$ to a file:
 | $10^3$ | $248{,}083$ |
 | $10^6$ | $198{,}878{,}423{,}611$ |
 | $2^{30}-1$ | $204{,}505{,}763{,}483{,}830{,}092$ |
+| $2^{32}-1$ | $3{,}215{,}709{,}724{,}700{,}470{,}901$ |
 
-The last value is from Brent et al. (2021).
+The value for $2^{30}-1$ is from Brent et al. (2021); the value for $2^{32}-1$ is new.
 
 ## Memory
 
