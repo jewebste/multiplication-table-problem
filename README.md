@@ -1,0 +1,112 @@
+# multiplication-table-problem
+
+Single-processor C++ implementation of an efficient algorithm for computing
+$M(n)$, the number of distinct entries in the $n \times n$ multiplication table.
+
+## The Problem
+
+$$M(n) = |\{ij : 1 \le i, j \le n\}|$$
+
+Despite its elementary definition, $M(n)$ grows significantly slower than $n^2$.
+Erdős (1955) showed $M(n) = o(n^2)$, and Ford (2008) established
+
+$$M(n) = \Theta\!\left(\frac{n^2}{\Phi(n)}\right), \quad
+\Phi(n) = (\log n)^c (\log\log n)^{3/2}, \quad
+c = 1 - \frac{1 + \log\log 2}{\log 2} \approx 0.086$$
+
+Equivalently, most integers are *not* products of two integers both at most $n$.
+
+## Algorithm
+
+The implementation is based on Algorithm 4 of:
+
+> R. Brent, C. Pomerance, D. Purdum, J. Webster,
+> *Algorithms for the Multiplication Table Problem*,
+> [arXiv:1908.04251](https://arxiv.org/abs/1908.04251) (2021).
+
+This implementation goes beyond the above and incorporates the ability to
+correct shapes from unit shifts of Algorithm 4.
+
+The key identity is $M(n) = \sum_{k=1}^{n} (k - \delta(k))$, where $\delta(k)$
+counts multiples of $k$ already in the $(k-1) \times (k-1)$ table.
+
+**Unit-shift strategy.** For a fixed *multiplier* $m$, the divisor shape for
+$mk$ changes predictably as $k$ increases by 1. When $k$ is prime the shape
+shifts exactly (no correction needed); when $k$ is composite a small correction
+accounts for extra divisors of $mk$ not in $M \cup kM$.
+
+**Variable-smoothness multipliers.** A multiplier $m$ is included when
+$m \cdot P^+(m) \le n$, where $P^+(m)$ is the largest prime factor of $m$.
+Multipliers are processed in decreasing order of $\tau(m) = |\{d : d \mid m\}|$
+so that high-divisor-count multipliers claim the most composite integers early,
+minimising redundant work.
+
+## Build
+
+Requires a C++17 compiler. No external dependencies.
+
+```
+make
+```
+
+To enable SIMD acceleration on your platform, edit `CXXFLAGS` in the Makefile:
+
+| Platform | Flag(s) |
+|----------|---------|
+| ARM NEON | `-DUSE_NEON_SIMD` |
+| AVX-512  | `-DUSE_AVX512_SIMD -mavx512f` |
+
+## Usage
+
+```
+./mtable <n> [--bound <b>] [--output <file>] [--warm <file>]
+```
+
+| Argument | Description |
+|----------|-------------|
+| `n` | Compute $M(n)$. Must be $\le 2^{32}-1$. |
+| `--bound <b>` | Include multipliers $m \le b$ (default: $\lfloor n^{2/3} \rfloor$). |
+| `--output <file>` | Write `k M(k)` for $k = 1 \ldots n$, one per line, to a text file. |
+| `--warm <file>` | Warm-start from a binary file of `uint32_t[n+1]` where entry $k$ holds $k - \delta(k)$. |
+
+## Examples
+
+```
+./mtable 1000000
+```
+```
+M(1000000): unit-shift algorithm (Alg. 4, var-smooth multipliers)
+Multiplier bound : m <= 10000
+
+Multipliers: 5345  [3 ms]
+
+Exact fills    : 978668
+Corrected fills: 21332
+Skipped (cached): 0
+Fallback (Alg.2): 0  [0 ms]
+Sweep time     : 18313 ms
+
+M(1000000) = 198878423611  [18315 ms total]
+```
+
+Write all values $M(1), M(2), \ldots, M(10000)$ to a file:
+
+```
+./mtable 10000 --output values.txt
+```
+
+## Known values
+
+| $n$ | $M(n)$ |
+|-----|--------|
+| $10^3$ | $248{,}083$ |
+| $10^6$ | $198{,}878{,}423{,}611$ |
+| $2^{30}-1$ | $204{,}505{,}763{,}483{,}830{,}092$ |
+
+The last value is from Brent et al. (2021).
+
+## Memory
+
+The program allocates a `uint32_t` array of length $n+1$ (roughly $4n$ bytes)
+plus a bit-vector of $n$ bits ($n/8$ bytes). For $n = 10^8$ this is approximately
+400 MB total.
