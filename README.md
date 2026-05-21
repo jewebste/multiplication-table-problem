@@ -41,6 +41,10 @@ Multipliers are processed in decreasing order of $\tau(m) = |\{d : d \mid m\}|$
 so that high-divisor-count multipliers claim the most composite integers early,
 minimising redundant work.
 
+**Complexity.** The runtime is conjectured to be $O(n^{5/3} \log n)$, which
+is superlinear — scaling from $n = 10^6$ to $n = 10^7$ increases the running
+time by a factor of roughly $10^{5/3} \approx 46$, not 10.
+
 ## Build
 
 Requires a C++17 compiler. No external dependencies.
