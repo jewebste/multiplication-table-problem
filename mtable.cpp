@@ -130,8 +130,8 @@ int main(int argc, char* argv[]) {
             "  --output <f>    write 'k M(k)' for k=1..n to text file\n"
             "  --warm <f>      warm-start binary file: uint32_t[n+1] "
                               "of (k - delta(k)) values\n"
-            "  --save-warm <f> write uint32_t[n+1] of (k - delta(k)) values "
-                              "for use as a future warm-start\n");
+            "  --save-warm <f> write k-delta(k) for k=0..n as binary "
+                              "uint32_t[n+1]; usable as a future --warm input\n");
         return 1;
     }
 
