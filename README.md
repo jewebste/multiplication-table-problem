@@ -128,3 +128,34 @@ read sequentially once at the end to form the sum $M(n)$.
 | $10^6$ | 125 KB | 4 MB |
 | $10^8$ | 12.5 MB | 400 MB |
 | $10^9$ | 125 MB | 4 GB |
+
+## For larger $n$
+
+`mtable` performs all steps in a single pass on a single processor, which
+becomes impractical beyond roughly $n \sim 10^9$.  Scaling to $n = 2^{32}$
+and beyond requires several architectural changes:
+
+**Decouple the pipeline steps.**  The single-pass structure of `mtable`
+couples multiplier generation, the unit-shift sweep, corrections, and
+accumulation.  At large scale these become separate programs communicating
+through files, allowing each stage to be tuned, restarted, or distributed
+independently.
+
+**Segment the bit-vector.**  The shared bit-vector of $n$ bits must fit in
+RAM.  For $n = 2^{32}$ that is 512 MB — manageable on its own, but the
+random-access pattern across the full vector is cache-hostile.  Segmenting
+the sweep so that each pass works on a contiguous chunk of the bit-vector
+that fits in L3 cache significantly improves throughput.
+
+**Distribute multipliers across processors.**  Each multiplier is largely
+independent: it owns a disjoint set of composite integers and sweeps its own
+portion of the bit-vector.  Multipliers can therefore be partitioned across
+nodes in a cluster, each node writing its share of the $k - \delta(k)$ values
+to a memory-mapped file.  An ownership bit-vector prevents two nodes from
+counting the same composite twice.
+
+**Replace the val array with a memory-mapped file.**  At $n = 2^{32}$ the
+`uint32_t` array requires 16 GB, exceeding available RAM on a single node.
+A memory-mapped file spreads this across disk-backed pages and allows
+multiple nodes to write to disjoint regions concurrently.
+
