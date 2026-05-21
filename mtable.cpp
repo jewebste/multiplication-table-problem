@@ -127,9 +127,11 @@ int main(int argc, char* argv[]) {
             "  n             compute M(n)  (n <= 2^32 - 1)\n"
             "  --bound <b>   include multipliers m <= b  "
                             "(default: floor(n^{2/3}))\n"
-            "  --output <f>  write 'k M(k)' for k=1..n to text file\n"
-            "  --warm <f>    warm-start binary file: uint32_t[n+1] "
-                            "of (k - delta(k)) values\n");
+            "  --output <f>    write 'k M(k)' for k=1..n to text file\n"
+            "  --warm <f>      warm-start binary file: uint32_t[n+1] "
+                              "of (k - delta(k)) values\n"
+            "  --save-warm <f> write uint32_t[n+1] of (k - delta(k)) values "
+                              "for use as a future warm-start\n");
         return 1;
     }
 
@@ -144,8 +146,9 @@ int main(int argc, char* argv[]) {
     // Default bound: m <= floor(n^{2/3}), exclusive bound = floor(n^{2/3}) + 1.
     uint64_t bound_excl = floor_n23(N) + 1;
 
-    const char* output_file = nullptr;
-    const char* warm_file   = nullptr;
+    const char* output_file    = nullptr;
+    const char* warm_file      = nullptr;
+    const char* save_warm_file = nullptr;
 
     for (int i = 2; i < argc; ++i) {
         if (!strcmp(argv[i], "--bound") && i + 1 < argc)
@@ -154,6 +157,8 @@ int main(int argc, char* argv[]) {
             output_file = argv[++i];
         else if (!strcmp(argv[i], "--warm") && i + 1 < argc)
             warm_file = argv[++i];
+        else if (!strcmp(argv[i], "--save-warm") && i + 1 < argc)
+            save_warm_file = argv[++i];
         else {
             fprintf(stderr, "Unknown argument: %s\n", argv[i]);
             return 1;
@@ -325,6 +330,19 @@ int main(int argc, char* argv[]) {
         }
         fclose(f);
         printf("Written M(k) for k=1..%u to %s\n", n, output_file);
+    }
+
+    // Optional: write val[0..n] as binary uint32_t[n+1] for use as a warm-start
+    // in a subsequent run with larger n.
+    if (save_warm_file) {
+        FILE* f = fopen(save_warm_file, "wb");
+        if (!f) {
+            fprintf(stderr, "Cannot open save-warm file: %s\n", save_warm_file);
+            return 1;
+        }
+        fwrite(val.data(), sizeof(uint32_t), n + 1, f);
+        fclose(f);
+        printf("Written warm-start file (%u entries) to %s\n", n + 1, save_warm_file);
     }
 
     return 0;

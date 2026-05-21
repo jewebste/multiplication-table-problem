@@ -68,6 +68,7 @@ To enable SIMD acceleration on your platform, edit `CXXFLAGS` in the Makefile:
 | `--bound <b>` | Include multipliers $m \le b$ (default: $\lfloor n^{2/3} \rfloor$). |
 | `--output <file>` | Write `k M(k)` for $k = 1 \ldots n$, one per line, to a text file. |
 | `--warm <file>` | Warm-start from a binary file of `uint32_t[n+1]` where entry $k$ holds $k - \delta(k)$. |
+| `--save-warm <file>` | After the sweep, write a binary `uint32_t[n+1]` file that can be passed to `--warm` in a later run. |
 
 ## Examples
 
@@ -93,6 +94,14 @@ Write all values $M(1), M(2), \ldots, M(10000)$ to a file:
 
 ```
 ./mtable 10000 --output values.txt
+```
+
+Incremental computation — compute $M(10^4)$, save a warm-start file, then
+extend to $M(10^6)$ without redoing the work already done:
+
+```
+./mtable 10000 --save-warm warm_10k.bin
+./mtable 1000000 --warm warm_10k.bin
 ```
 
 ## Known values
