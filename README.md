@@ -7,7 +7,7 @@ $M(n)$, the number of distinct entries in the $n \times n$ multiplication table.
 
 $$M(n) = |\{ij : 1 \le i, j \le n\}|$$
 
-Despite its elementary definition, $M(n)$ grows significantly slower than $n^2$.
+Despite its elementary definition, $M(n)$ grows slower than $n^2$.
 Erdős (1955) showed $M(n) = o(n^2)$, and Ford (2008) established
 
 $$M(n) = \Theta \left(\frac{n^2}{\Phi(n)}\right), \quad
