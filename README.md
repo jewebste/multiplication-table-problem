@@ -117,6 +117,13 @@ The value for $2^{30}-1$ is from Brent et al. (2021); the value for $2^{32}-1$ i
 
 ## Memory
 
-The program allocates a `uint32_t` array of length $n+1$ (roughly $4n$ bytes)
-plus a bit-vector of $n$ bits ($n/8$ bytes). For $n = 10^8$ this is approximately
-400 MB total.
+The bit-vector of $n$ bits is read and written with random-access patterns
+throughout the entire multiplier sweep; performance degrades once it exceeds
+the L3 cache.  The `uint32_t` array of $k - \delta(k)$ values is written
+sequentially and read once at the end.
+
+| $n$ | bit-vector | `uint32_t` array |
+|-----|-----------|-----------------|
+| $10^6$ | 125 KB | 4 MB |
+| $10^8$ | 12.5 MB | 400 MB |
+| $10^9$ | 125 MB | 4 GB |
