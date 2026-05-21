@@ -27,8 +27,11 @@ The implementation is based on Algorithm 4 of:
 This implementation goes beyond the above and incorporates the ability to
 correct shapes from unit shifts of Algorithm 4.
 
-The key identity is $$M(n) = \sum_{k=1}^{n} (k - \delta(k))$$, where $\delta(k)$
-counts multiples of $k$ already in the $(k-1) \times (k-1)$ table.
+The key identity is 
+
+$$M(n) = \sum_{k=1}^{n} (k - \delta(k)),$$
+
+where $\delta(k)$ counts multiples of $k$ already in the $(k-1) \times (k-1)$ table.
 
 **Unit-shift strategy.** For a fixed *multiplier* $m$, the divisor shape for
 $mk$ changes predictably as $k$ increases by 1. When $k$ is prime the shape
