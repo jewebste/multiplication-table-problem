@@ -141,11 +141,11 @@ accumulation.  At large scale these become separate programs communicating
 through files, allowing each stage to be tuned, restarted, or distributed
 independently.
 
-**Segment the bit-vector.**  The shared bit-vector of $n$ bits must fit in
-RAM.  For $n = 2^{32}$ that is 512 MB — manageable on its own, but the
-random-access pattern across the full vector is cache-hostile.  Segmenting
-the sweep so that each pass works on a contiguous chunk of the bit-vector
-that fits in L3 cache significantly improves throughput.
+**Segment the bit-vector.**  Due to its random-access pattern, the bit-vector
+must fit in L3 cache to avoid severe performance degradation from cache misses.
+For $n = 2^{32}$ the full bit-vector is 512 MB — far exceeding a typical L3
+cache.  Segmenting the sweep so that each pass works on a contiguous chunk
+that fits in cache significantly improves throughput.
 
 **Distribute multipliers across processors.**  Each multiplier is largely
 independent: it owns a disjoint set of composite integers and sweeps its own
