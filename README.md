@@ -154,8 +154,10 @@ nodes in a cluster, each node writing its share of the $k - \delta(k)$ values
 to a memory-mapped file.  An ownership bit-vector prevents two nodes from
 counting the same composite twice.
 
-**Replace the val array with a memory-mapped file.**  At $n = 2^{32}$ the
-`uint32_t` array requires 16 GB, exceeding available RAM on a single node.
-A memory-mapped file spreads this across disk-backed pages and allows
-multiple nodes to write to disjoint regions concurrently.
+**Replace the val array with a memory-mapped file.**  When multipliers are
+distributed across nodes, each node must write its $k - \delta(k)$ values
+into a shared result array.  Memory-mapping a single file on shared storage
+allows all nodes to write to disjoint regions concurrently without explicit
+coordination, and the completed file serves directly as input to the final
+summation step.
 
