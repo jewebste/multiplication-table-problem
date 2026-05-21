@@ -120,7 +120,8 @@ The value for $2^{30}-1$ is from Brent et al. (2021); the value for $2^{32}-1$ i
 The bit-vector of $n$ bits is read and written with random-access patterns
 throughout the entire multiplier sweep; performance degrades once it exceeds
 the L3 cache.  The `uint32_t` array of $k - \delta(k)$ values is written
-sequentially and read once at the end.
+with strided access (multiples of each multiplier $m$) during the sweep and
+read sequentially once at the end to form the sum $M(n)$.
 
 | $n$ | bit-vector | `uint32_t` array |
 |-----|-----------|-----------------|
