@@ -10,11 +10,11 @@ $$M(n) = |\{ij : 1 \le i, j \le n\}|$$
 Despite its elementary definition, $M(n)$ grows significantly slower than $n^2$.
 Erdős (1955) showed $M(n) = o(n^2)$, and Ford (2008) established
 
-$$M(n) = \Theta\!\left(\frac{n^2}{\Phi(n)}\right), \quad
+$$M(n) = \Theta \left(\frac{n^2}{\Phi(n)}\right), \quad
 \Phi(n) = (\log n)^c (\log\log n)^{3/2}, \quad
 c = 1 - \frac{1 + \log\log 2}{\log 2} \approx 0.086$$
 
-Equivalently, most integers are *not* products of two integers both at most $n$.
+Equivalently, most integers less than $n^2$ are *not* products of two integers both at most $n$.
 
 ## Algorithm
 
