@@ -132,7 +132,7 @@ read sequentially once at the end to form the sum $M(n)$.
 ## For larger $n$
 
 `mtable` performs all steps in a single pass on a single processor, which
-becomes impractical beyond roughly $n \sim 10^9$.  Scaling to $n = 2^{32}$
+becomes impractical beyond roughly $n \sim 10^8$.  Scaling to $n = 2^{32}$
 and beyond requires several architectural changes:
 
 **Decouple the pipeline steps.**  The single-pass structure of `mtable`
